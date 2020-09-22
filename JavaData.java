@@ -1,4 +1,4 @@
-public class Homework {
+public class JavaData {
   public static void main(String[] args) {
     // If it matches my sample exactly it gets a 0
     // 1. Create a variable that holds a name
