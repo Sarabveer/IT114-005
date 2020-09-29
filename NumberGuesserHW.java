@@ -10,8 +10,14 @@ public class NumberGuesserHW {
 	private int strikes = 0;
 	private int maxStrikes = 5;
 	private int number = 0;
+	private int losses = 0;
 	private boolean isRunning = false;
 	final String saveFile = "numberGuesserSave.txt";
+
+	// Gets range of numbers, based on level.
+	public static int getRange(int level) {
+		return 9 + ((level - 1) * 5);
+	}
 
 	/***
 	 * Gets a random number between 1 and level.
@@ -19,8 +25,14 @@ public class NumberGuesserHW {
 	 * @param level (level to use as upper bounds)
 	 * @return number between bounds
 	 */
-	public static int getNumber(int level) {
-		int range = 9 + ((level - 1) * 5);
+	public int getNumber(int level) {
+		int range;
+		if (losses >= 5) {
+			range = 4 + ((level - 1) * 5);
+			System.out.println("It seems you are having a hard time, the game has been put into easy mode.");
+		} else {
+			range = getRange(level);
+		}
 		System.out.println("I picked a random number between 1-" + (range + 1) + ", let's see if you can guess.");
 		return new Random().nextInt(range) + 1;
 	}
@@ -28,6 +40,7 @@ public class NumberGuesserHW {
 	private void win() {
 		System.out.println("That's right!");
 		level++;// level up!
+		losses = 0;
 		strikes = 0;
 		System.out.println("Welcome to level " + level);
 		number = getNumber(level);
@@ -35,6 +48,7 @@ public class NumberGuesserHW {
 	}
 
 	private void lose() {
+		losses++;
 		System.out.println("Uh oh, looks like you need to get some more practice.");
 		System.out.println("The correct number was " + number);
 		strikes = 0;
@@ -126,6 +140,7 @@ public class NumberGuesserHW {
 					+ " attempts to guess.");
 			if (loadLevel()) {
 				System.out.println("Successfully loaded level " + level + " and " + strikes + " strikes, let's continue then.");
+				System.out.println("The random number is between 1-" + (getRange(level) + 1) + ", let's see if you can guess.");
 			} else {
 				number = getNumber(level);
 			}
