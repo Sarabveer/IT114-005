@@ -1,10 +1,11 @@
 public class Recursion {
-  
 	public static int sum(int num) {
-		if (num > 0) {
-			return num + sum(num - 1);
+		int sum = 0;
+		while(num > 0) {
+			sum += num;
+			num -= 1;
 		}
-		return 0;
+		return sum;
 	}
 
 	public static void main(String[] args) {
