@@ -97,8 +97,9 @@ public class Room implements AutoCloseable {
 	 * @param client  The sender of the message (since they'll be the ones
 	 *                triggering the actions)
 	 */
-	private boolean processCommands(String message, ServerThread client) {
-		boolean wasCommand = false;
+	private String processCommands(String message, ServerThread client) {
+		// boolean wasCommand = false;
+		String response = null;
 		try {
 			if (message.indexOf(COMMAND_TRIGGER) > -1) {
 				String[] comm = message.split(COMMAND_TRIGGER);
@@ -116,28 +117,34 @@ public class Room implements AutoCloseable {
 						if (server.createNewRoom(roomName)) {
 							joinRoom(roomName, client);
 						}
-						wasCommand = true;
+						// wasCommand = true;
 						break;
 					case JOIN_ROOM:
 						roomName = comm2[1];
 						joinRoom(roomName, client);
-						wasCommand = true;
+						// wasCommand = true;
 						break;
 					case ROLL:
-						sendMessage(client, "rolled " + Integer.toString(generator.nextInt(6) + 1));
-						wasCommand = true;
+						response = "🎲 rolled " + Integer.toString(generator.nextInt(6) + 1);
+						// wasCommand = true;
 						break;
 					case FLIP:
 						String[] coin = {"Heads", "Tails"};
-						sendMessage(client, "flipped " + coin[generator.nextInt(coin.length)]);
-						wasCommand = true;
+						response = "💁‍♂️ flipped " + coin[generator.nextInt(coin.length)];
+						// wasCommand = true;
+						break;
+					default:
+						response = message;
 						break;
 				}
+			} else {
+				response = message;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return wasCommand;
+		// return wasCommand;
+		return response;
 	}
 
 	// TODO changed from string to ServerThread
@@ -163,10 +170,12 @@ public class Room implements AutoCloseable {
 	 */
 	protected void sendMessage(ServerThread sender, String message) {
 		log.log(Level.INFO, getName() + ": Sending message to " + clients.size() + " clients");
-		if (processCommands(message, sender)) {
+		String response = processCommands(message, sender);
+		if (response == null) {
 			// it was a command, don't broadcast
 			return;
 		}
+		message = response;
 		Iterator<ServerThread> iter = clients.iterator();
 		while (iter.hasNext()) {
 			ServerThread client = iter.next();
