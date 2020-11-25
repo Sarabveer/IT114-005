@@ -125,12 +125,12 @@ public class Room implements AutoCloseable {
 						// wasCommand = true;
 						break;
 					case ROLL:
-						response = "🎲 rolled " + Integer.toString(generator.nextInt(6) + 1);
+						response = "Dice rolled " + Integer.toString(generator.nextInt(6) + 1);
 						// wasCommand = true;
 						break;
 					case FLIP:
 						String[] coin = {"Heads", "Tails"};
-						response = "💁‍♂️ flipped " + coin[generator.nextInt(coin.length)];
+						response = "Coin flipped " + coin[generator.nextInt(coin.length)];
 						// wasCommand = true;
 						break;
 					default:
@@ -138,6 +138,18 @@ public class Room implements AutoCloseable {
 						break;
 				}
 			} else {
+				// Bold
+				if (message.contains("**")) {
+					message = message.replaceAll("\\*\\*\\b", "<b>").replaceAll("\\b\\*\\*", "</b>");
+				}
+				// Italics
+				if (message.contains("*")) {
+					message = message.replaceAll("\\*\\b", "<i>").replaceAll("\\b\\*", "</i>");
+				}
+				// Underline
+				if (message.contains("__")) {
+					message = message.replaceAll("\\b__", "<u>").replaceAll("__\\b", "</u>");
+				}
 				response = message;
 			}
 		} catch (Exception e) {
