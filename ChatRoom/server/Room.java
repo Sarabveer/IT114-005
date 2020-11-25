@@ -125,12 +125,12 @@ public class Room implements AutoCloseable {
 						// wasCommand = true;
 						break;
 					case ROLL:
-						response = "Dice rolled " + Integer.toString(generator.nextInt(6) + 1);
+						response = "<i><b style=\"color: red;\">Dice</b> rolled</i> <u>" + Integer.toString(generator.nextInt(6) + 1) + "</u>";
 						// wasCommand = true;
 						break;
 					case FLIP:
 						String[] coin = {"Heads", "Tails"};
-						response = "Coin flipped " + coin[generator.nextInt(coin.length)];
+						response = "<i><b style=\"color: gray;\">Coin</b> flipped</i> <u>" + coin[generator.nextInt(coin.length)] + "</u>";
 						// wasCommand = true;
 						break;
 					default:
