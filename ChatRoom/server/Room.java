@@ -8,7 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Room implements AutoCloseable {
-	private static SocketServer server;// used to refer to accessible server functions
+	private static SocketServer server; // used to refer to accessible server functions
 	private String name;
 	private final static Logger log = Logger.getLogger(Room.class.getName());
 	private Random generator = new Random();
@@ -53,7 +53,7 @@ public class Room implements AutoCloseable {
 		while (iter.hasNext()) {
 			ServerThread c = iter.next();
 			if (c != client) {
-				boolean messageSent = client.sendConnectionStatus(c.getClientName(), true, null);
+				client.sendConnectionStatus(c.getClientName(), true, null);
 			}
 		}
 	}
@@ -84,6 +84,12 @@ public class Room implements AutoCloseable {
 
 	protected void joinRoom(String room, ServerThread client) {
 		server.joinRoom(room, client);
+	}
+
+	protected void createRoom(String room, ServerThread client) {
+		if (server.createNewRoom(room)) {
+			joinRoom(room, client);
+		}
 	}
 
 	protected void joinLobby(ServerThread client) {
@@ -125,12 +131,14 @@ public class Room implements AutoCloseable {
 						// wasCommand = true;
 						break;
 					case ROLL:
-						response = "<i><b style=\"color: red;\">Dice</b> rolled</i> <u>" + Integer.toString(generator.nextInt(6) + 1) + "</u>";
+						response = "<i><b style=\"color: red;\">Dice</b> rolled</i> <u>"
+								+ Integer.toString(generator.nextInt(6) + 1) + "</u>";
 						// wasCommand = true;
 						break;
 					case FLIP:
-						String[] coin = {"Heads", "Tails"};
-						response = "<i><b style=\"color: gray;\">Coin</b> flipped</i> <u>" + coin[generator.nextInt(coin.length)] + "</u>";
+						String[] coin = { "Heads", "Tails" };
+						response = "<i><b style=\"color: gray;\">Coin</b> flipped</i> <u>" + coin[generator.nextInt(coin.length)]
+								+ "</u>";
 						// wasCommand = true;
 						break;
 					default:
@@ -197,6 +205,10 @@ public class Room implements AutoCloseable {
 				log.log(Level.INFO, "Removed client " + client.getId());
 			}
 		}
+	}
+
+	public List<String> getRooms(String room) {
+		return server.getRooms(room);
 	}
 
 	/***
