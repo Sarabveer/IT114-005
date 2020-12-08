@@ -16,6 +16,7 @@ public class Room implements AutoCloseable {
 
 	// Commands
 	private final static String COMMAND_TRIGGER = "/";
+	private final static String AT_SYMBOL = "@";
 	private final static String CREATE_ROOM = "createroom";
 	private final static String JOIN_ROOM = "joinroom";
 	private final static String ROLL = "roll";
@@ -166,6 +167,18 @@ public class Room implements AutoCloseable {
 						response = textEffects(message);
 						break;
 				}
+			} if (message.indexOf(AT_SYMBOL) > -1) {
+				String[] comm = message.split(AT_SYMBOL);
+				log.log(Level.INFO, message);
+				String part1 = comm[1];
+				String[] comm2 = part1.split(" ");
+				String username = comm2[0];
+				if (username != null) {
+					username = username.toLowerCase();
+				}
+				message = textEffects(String.join(" ", Arrays.copyOfRange(comm2, 1, comm2.length)));
+				message = "<i>(Private)</i> " + message;
+				sendPrivateMessage(client, username, message);
 			} else {
 				response = textEffects(message);
 			}
@@ -185,6 +198,17 @@ public class Room implements AutoCloseable {
 			if (!messageSent) {
 				iter.remove();
 				log.log(Level.INFO, "Removed client " + c.getId());
+			}
+		}
+	}
+
+	// Sends a message privatly to a specific client
+	protected void sendPrivateMessage(ServerThread sender, String receiver, String message) {
+		Iterator<ServerThread> iter = clients.iterator();
+		while (iter.hasNext()) {
+			ServerThread client = iter.next();
+			if (client.getClientName().equals(receiver) || sender.getClientName() == client.getClientName()) {
+				client.send(sender.getClientName(), message);
 			}
 		}
 	}
