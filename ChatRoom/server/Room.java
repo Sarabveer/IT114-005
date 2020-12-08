@@ -172,8 +172,8 @@ public class Room implements AutoCloseable {
 						}
 						if (!client.muted.contains(username_mute)) {
 							client.muted.add(username_mute);
+							sendPrivateMessage(client, username_mute, "<i>has muted you.</i>", false);
 						}
-						sendPrivateMessage(client, username_mute, "<i>has muted you.</i>", false);
 						// wasCommand = true;
 						break;
 					case UNMUTE:
@@ -183,8 +183,8 @@ public class Room implements AutoCloseable {
 						}
 						if (client.muted.contains(username_unmute)) {
 							client.muted.remove(username_unmute);
+							sendPrivateMessage(client, username_unmute, "<i>has unmuted you.</i>", false);
 						}
-						sendPrivateMessage(client, username_unmute, "<i>has unmuted you.</i>", false);
 						// wasCommand = true;
 						break;
 					default:
@@ -231,7 +231,7 @@ public class Room implements AutoCloseable {
 		Iterator<ServerThread> iter = clients.iterator();
 		while (iter.hasNext()) {
 			ServerThread client = iter.next();
-			if(!client.isMuted(sender.getClientName().toLowerCase()) && !self) {
+			if(!client.isMuted(sender.getClientName().toLowerCase()) || !self) {
 				if (client.getClientName().equalsIgnoreCase(receiver) || (sender.getClientName() == client.getClientName() && self) ) {
 					client.send(sender.getClientName(), message);
 				}
