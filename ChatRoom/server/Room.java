@@ -1,6 +1,7 @@
 package server;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -19,6 +20,7 @@ public class Room implements AutoCloseable {
 	private final static String JOIN_ROOM = "joinroom";
 	private final static String ROLL = "roll";
 	private final static String FLIP = "flip";
+	private final static String COLOR = "color";
 
 	public Room(String name) {
 		this.name = name;
@@ -96,6 +98,23 @@ public class Room implements AutoCloseable {
 		server.joinLobby(client);
 	}
 
+	// Function to process bold, italics, and underline
+	private String textEffects(String message) {
+		// Bold
+		if (message.contains("**")) {
+			message = message.replaceAll("\\*\\*\\b", "<b>").replaceAll("\\b\\*\\*", "</b>");
+		}
+		// Italics
+		if (message.contains("*")) {
+			message = message.replaceAll("\\*\\b", "<i>").replaceAll("\\b\\*", "</i>");
+		}
+		// Underline
+		if (message.contains("__")) {
+			message = message.replaceAll("\\b__", "<u>").replaceAll("__\\b", "</u>");
+		}
+		return message;
+	}
+
 	/***
 	 * Helper function to process messages to trigger different functionality.
 	 * 
@@ -131,34 +150,24 @@ public class Room implements AutoCloseable {
 						// wasCommand = true;
 						break;
 					case ROLL:
-						response = "<i><b style=\"color: red;\">Dice</b> rolled</i> <u>"
-								+ Integer.toString(generator.nextInt(6) + 1) + "</u>";
+						response = "<i><b style=\"color: red;\">Dice</b> rolled</i> <u>" + Integer.toString(generator.nextInt(6) + 1) + "</u>";
 						// wasCommand = true;
 						break;
 					case FLIP:
 						String[] coin = { "Heads", "Tails" };
-						response = "<i><b style=\"color: gray;\">Coin</b> flipped</i> <u>" + coin[generator.nextInt(coin.length)]
-								+ "</u>";
+						response = "<i><b style=\"color: gray;\">Coin</b> flipped</i> <u>" + coin[generator.nextInt(coin.length)] + "</u>";
+						// wasCommand = true;
+						break;
+					case COLOR:
+						response = "<span style=\"color: " + comm2[1] + ";\">" + textEffects(String.join(" ", Arrays.copyOfRange(comm2, 2, comm2.length))) + "</span>";
 						// wasCommand = true;
 						break;
 					default:
-						response = message;
+						response = textEffects(message);
 						break;
 				}
 			} else {
-				// Bold
-				if (message.contains("**")) {
-					message = message.replaceAll("\\*\\*\\b", "<b>").replaceAll("\\b\\*\\*", "</b>");
-				}
-				// Italics
-				if (message.contains("*")) {
-					message = message.replaceAll("\\*\\b", "<i>").replaceAll("\\b\\*", "</i>");
-				}
-				// Underline
-				if (message.contains("__")) {
-					message = message.replaceAll("\\b__", "<u>").replaceAll("__\\b", "</u>");
-				}
-				response = message;
+				response = textEffects(message);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
