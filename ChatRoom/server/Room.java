@@ -167,6 +167,10 @@ public class Room implements AutoCloseable {
 						break;
 					case MUTE:
 						String username_mute = comm2[1].split(AT_SYMBOL)[1];
+						if (username_mute.equals(client.getClientName())) {
+							sendPrivateMessage(client, client.getClientName(), "<b><i>You cannot mute yourself!</i></b>", false);
+							break;
+						}
 						if (username_mute != null) {
 							username_mute = username_mute.toLowerCase();
 						}
@@ -178,6 +182,10 @@ public class Room implements AutoCloseable {
 						break;
 					case UNMUTE:
 						String username_unmute = comm2[1].split(AT_SYMBOL)[1];
+						if (username_unmute.equals(client.getClientName())) {
+							sendPrivateMessage(client, client.getClientName(), "<b><i>You cannot unmute yourself!</i></b>", false);
+							break;
+						}
 						if (username_unmute != null) {
 							username_unmute = username_unmute.toLowerCase();
 						}
