@@ -22,6 +22,8 @@ public class Room implements AutoCloseable {
 	private final static String ROLL = "roll";
 	private final static String FLIP = "flip";
 	private final static String COLOR = "color";
+	private final static String MUTE = "mute";
+	private final static String UNMUTE = "unmute";
 
 	public Room(String name) {
 		this.name = name;
@@ -163,11 +165,33 @@ public class Room implements AutoCloseable {
 						response = "<span style=\"color: " + comm2[1] + ";\">" + textEffects(String.join(" ", Arrays.copyOfRange(comm2, 2, comm2.length))) + "</span>";
 						// wasCommand = true;
 						break;
+					case MUTE:
+						String username_mute = comm2[1].split(AT_SYMBOL)[1];
+						if (username_mute != null) {
+							username_mute = username_mute.toLowerCase();
+						}
+						if (!client.muted.contains(username_mute)) {
+							client.muted.add(username_mute);
+						}
+						sendPrivateMessage(client, username_mute, "<i>has muted you.</i>", false);
+						// wasCommand = true;
+						break;
+					case UNMUTE:
+						String username_unmute = comm2[1].split(AT_SYMBOL)[1];
+						if (username_unmute != null) {
+							username_unmute = username_unmute.toLowerCase();
+						}
+						if (client.muted.contains(username_unmute)) {
+							client.muted.remove(username_unmute);
+						}
+						sendPrivateMessage(client, username_unmute, "<i>has unmuted you.</i>", false);
+						// wasCommand = true;
+						break;
 					default:
 						response = textEffects(message);
 						break;
 				}
-			} if (message.indexOf(AT_SYMBOL) > -1) {
+			} else if (message.indexOf(AT_SYMBOL) > -1) {
 				String[] comm = message.split(AT_SYMBOL);
 				log.log(Level.INFO, message);
 				String part1 = comm[1];
@@ -177,8 +201,8 @@ public class Room implements AutoCloseable {
 					username = username.toLowerCase();
 				}
 				message = textEffects(String.join(" ", Arrays.copyOfRange(comm2, 1, comm2.length)));
-				message = "<i>(Private)</i> " + message;
-				sendPrivateMessage(client, username, message);
+				message = "<i>(Private -> " + username + ")</i> " + message;
+				sendPrivateMessage(client, username, message, true);
 			} else {
 				response = textEffects(message);
 			}
@@ -203,12 +227,14 @@ public class Room implements AutoCloseable {
 	}
 
 	// Sends a message privatly to a specific client
-	protected void sendPrivateMessage(ServerThread sender, String receiver, String message) {
+	protected void sendPrivateMessage(ServerThread sender, String receiver, String message, boolean self) {
 		Iterator<ServerThread> iter = clients.iterator();
 		while (iter.hasNext()) {
 			ServerThread client = iter.next();
-			if (client.getClientName().equals(receiver) || sender.getClientName() == client.getClientName()) {
-				client.send(sender.getClientName(), message);
+			if(!client.isMuted(sender.getClientName().toLowerCase()) && !self) {
+				if (client.getClientName().equalsIgnoreCase(receiver) || (sender.getClientName() == client.getClientName() && self) ) {
+					client.send(sender.getClientName(), message);
+				}
 			}
 		}
 	}
@@ -232,10 +258,12 @@ public class Room implements AutoCloseable {
 		Iterator<ServerThread> iter = clients.iterator();
 		while (iter.hasNext()) {
 			ServerThread client = iter.next();
-			boolean messageSent = client.send(sender.getClientName(), message);
-			if (!messageSent) {
-				iter.remove();
-				log.log(Level.INFO, "Removed client " + client.getId());
+			if (!client.isMuted(sender.getClientName().toLowerCase())) {
+				boolean messageSent = client.send(sender.getClientName(), message);
+				if (!messageSent) {
+					iter.remove();
+					log.log(Level.INFO, "Removed client " + client.getId());
+				}
 			}
 		}
 	}
