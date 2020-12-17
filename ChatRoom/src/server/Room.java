@@ -41,6 +41,7 @@ public class Room implements AutoCloseable {
 
 	protected synchronized void addClient(ServerThread client) {
 		client.setCurrentRoom(this);
+		client.loadMutedUsers();
 		if (clients.indexOf(client) > -1) {
 			log.log(Level.INFO, "Attempting to add a client that already exists");
 		} else {
@@ -174,8 +175,9 @@ public class Room implements AutoCloseable {
 						if (username_mute != null) {
 							username_mute = username_mute.toLowerCase();
 						}
-						if (!client.muted.contains(username_mute)) {
+						if (!client.isMuted(username_mute)) {
 							client.muted.add(username_mute);
+							client.saveMutedUsers();
 							sendPrivateMessage(client, username_mute, "<i>has muted you.</i>", false);
 						}
 						// wasCommand = true;
@@ -189,8 +191,9 @@ public class Room implements AutoCloseable {
 						if (username_unmute != null) {
 							username_unmute = username_unmute.toLowerCase();
 						}
-						if (client.muted.contains(username_unmute)) {
+						if (client.isMuted(username_unmute)) {
 							client.muted.remove(username_unmute);
+							client.saveMutedUsers();
 							sendPrivateMessage(client, username_unmute, "<i>has unmuted you.</i>", false);
 						}
 						// wasCommand = true;
