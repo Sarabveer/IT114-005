@@ -378,13 +378,30 @@ public class ClientUI extends JFrame implements Event {
 		}
 	}
 
+	@Override
+	public void onMuted(String clientName, boolean muted) {
+		log.log(Level.INFO, String.format("Set mute status: %s", clientName));
+		Iterator<User> iter = users.iterator();
+		while (iter.hasNext()) {
+			User u = iter.next();
+			if (u.getName().equalsIgnoreCase(clientName)) {
+				if (muted) {
+					u.setName(String.format("<font color='red'>%s</font>", clientName));
+				} else {
+					u.setName(clientName);
+				}
+				break;
+			}
+		}
+	}
+
 	public void exportChat() {
 		try (FileWriter f = new FileWriter(self.getTitle() + ".txt")) {
 			int count = textArea.getComponentCount();
 			for (int i = 0; i < count; i++) {
 				JEditorPane text = (JEditorPane)textArea.getComponent(i);
 				if (text != null) {
-					String line = text.getText().split("<body>")[1].split("</body>")[0];
+					String line = text.getText().replaceAll("\\<.*?\\>", "").trim();
 					f.write("" + line + "\n");
 				}
 			}

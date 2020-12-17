@@ -178,6 +178,7 @@ public class Room implements AutoCloseable {
 						if (!client.isMuted(username_mute)) {
 							client.muted.add(username_mute);
 							client.saveMutedUsers();
+							client.sendMuted(username_mute);
 							sendPrivateMessage(client, username_mute, "<i>has muted you.</i>", false);
 						}
 						// wasCommand = true;
@@ -194,6 +195,7 @@ public class Room implements AutoCloseable {
 						if (client.isMuted(username_unmute)) {
 							client.muted.remove(username_unmute);
 							client.saveMutedUsers();
+							client.sendMuted(username_unmute);
 							sendPrivateMessage(client, username_unmute, "<i>has unmuted you.</i>", false);
 						}
 						// wasCommand = true;

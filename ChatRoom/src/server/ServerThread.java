@@ -50,6 +50,7 @@ public class ServerThread extends Thread {
 			for(String user : users) {
 				if (!isMuted(user) && user.length() != 0) {
 					muted.add(user);
+					sendMuted(user);
 				}
 			}
 		} catch (Exception e) {
@@ -140,6 +141,14 @@ public class ServerThread extends Thread {
 		return sendPayload(payload);
 	}
 
+	protected boolean sendMuted(String name) {
+		Payload payload = new Payload();
+		payload.setPayloadType(PayloadType.IS_MUTED);
+		payload.setClientName(name);
+		payload.setMuted(isMuted(name));
+		return sendPayload(payload);
+	}
+
 	private boolean sendPayload(Payload p) {
 		try {
 			out.writeObject(p);
@@ -199,6 +208,10 @@ public class ServerThread extends Thread {
 				break;
 			case JOIN_ROOM:
 				currentRoom.joinRoom(p.getMessage(), this);
+				break;
+			case IS_MUTED:
+				// we currently don't need to do anything since the UI/Client won't be sending
+				// this
 				break;
 			default:
 				log.log(Level.INFO, "Unhandled payload on server: " + p);
