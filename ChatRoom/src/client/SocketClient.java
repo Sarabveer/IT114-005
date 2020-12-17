@@ -135,7 +135,7 @@ public enum SocketClient {
 		}
 	}
 
-	private void sendOnChangeRoom(String name, boolean muted) {
+	private void sendMuted(String name, boolean muted) {
 		Iterator<Event> iter = events.iterator();
 		while (iter.hasNext()) {
 			Event e = iter.next();
