@@ -135,6 +135,16 @@ public enum SocketClient {
 		}
 	}
 
+	private void sendOnChangeRoom(String name, boolean muted) {
+		Iterator<Event> iter = events.iterator();
+		while (iter.hasNext()) {
+			Event e = iter.next();
+			if (e != null) {
+				e.onMuted(name, muted);
+			}
+		}
+	}
+
 	/***
 	 * Determine any special logic for different PayloadTypes
 	 * 
@@ -159,6 +169,8 @@ public enum SocketClient {
 				// reply from ServerThread
 				sendRoom(p.getMessage());
 				break;
+			case IS_MUTED:
+				sendMuted(p.getClientName(), p.getMuted());
 			default:
 				log.log(Level.WARNING, "unhandled payload on client" + p);
 				break;

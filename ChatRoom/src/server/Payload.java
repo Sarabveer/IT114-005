@@ -49,9 +49,18 @@ public class Payload implements Serializable {
         return this.number;
     }
 
+    private boolean mute;
+
+    public void setMuted(boolean mute) {
+    	this.mute = mute;
+    }
+
+    public boolean getMuted() {
+    	return mute;
+    }
+
     @Override
     public String toString() {
-        return String.format("Type[%s], Number[%s], Message[%s]", getPayloadType().toString(), getNumber(),
-                getMessage());
+        return String.format("Type[%s], Number[%s], Message[%s]", getPayloadType().toString(), getNumber(), getMessage());
     }
 }
