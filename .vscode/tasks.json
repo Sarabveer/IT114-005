@@ -23,7 +23,9 @@
         "-cevf",
         "client.ClientUI",
         "Client.jar",
-        "client/*"
+        "client/*",
+        "server/Payload.class",
+        "server/PayloadType.class"
       ],
       "options": {
         "cwd": "${workspaceFolder}/ChatRoom/bin"
